@@ -1,8 +1,8 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
-var SEED = require('../config/config').SEED;
 
+var middlewareAuth = require('../middlewares/autenticacion');
 var usuario = express();
 
 var Usuario = require('../models/usuario');
@@ -29,55 +29,12 @@ usuario.get('/', (req, res, next) => {
 
 });
 
-//===========================================
-// Crear Usuario
-//===========================================
-usuario.post('/', (req, res) => {
-    var body = req.body;
-
-    var user = new Usuario({
-        nombre: body.nombre,
-        correo: body.correo,
-        password: bcrypt.hashSync(body.password, 10),
-        img: body.img,
-        role: body.role
-    });
-    user.save((err, usuarioGuardado) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                mensaje: 'Error al crear usuario',
-                errors: err
-            });
-        }
-        res.status(201).json({
-            ok: true,
-            usuario: usuarioGuardado
-        });
-    })
-})
 
 
-//===========================================
-// verificar token 
-//===========================================
-usuario.use('/', (req, res, next) => {
-    var token = req.query.token;
-    jwt.verify(token, SEED, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({
-                ok: false,
-                mensaje: 'Token invalido',
-                errors: err
-            });
-        }
-        next();
-    })
-});
 //===========================================
 //=======Actualizar Dato
 //===========================================
-usuario.put('/:id', (req, res) => {
+usuario.put('/:id', middlewareAuth.verificaToken, (req, res) => {
     var id = req.params.id;
     var body = req.body;
     Usuario.findById(id, (err, buscado) => {
@@ -123,7 +80,7 @@ usuario.put('/:id', (req, res) => {
 //=======Eliminar Usuario
 //===========================================
 
-usuario.delete('/:id', (req, res) => {
+usuario.delete('/:id', middlewareAuth.verificaToken, (req, res) => {
     var id = req.params.id;
     Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
         if (err) {
@@ -146,5 +103,34 @@ usuario.delete('/:id', (req, res) => {
         });
     })
 });
+//===========================================
+// Crear Usuario
+//===========================================
+usuario.post('/', middlewareAuth.verificaToken, (req, res) => {
+    var body = req.body;
+
+    var user = new Usuario({
+        nombre: body.nombre,
+        correo: body.correo,
+        password: bcrypt.hashSync(body.password, 10),
+        img: body.img,
+        role: body.role
+    });
+    user.save((err, usuarioGuardado) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Error al crear usuario',
+                errors: err
+            });
+        }
+        res.status(201).json({
+            ok: true,
+            usuario: usuarioGuardado,
+            usuarioToken = req.usuario
+        });
+    })
+});
+
 
 module.exports = usuario;

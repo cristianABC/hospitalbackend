@@ -19,6 +19,7 @@ app.post('/', (req, res) => {
             });
         }
         if (!usuarioDB) {
+            console.log("NO USUARIO DB");
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Credenciales incorrectas',
@@ -26,7 +27,9 @@ app.post('/', (req, res) => {
             });
         }
 
-        if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
+        // if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
+        if (!body.password == usuarioDB.password) {
+            console.log(body.password, usuarioDB.password);
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Credenciales incorrectas',

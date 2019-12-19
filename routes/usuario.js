@@ -126,8 +126,7 @@ usuario.post('/', middlewareAuth.verificaToken, (req, res) => {
         }
         res.status(201).json({
             ok: true,
-            usuario: usuarioGuardado,
-            usuarioToken = req.usuario
+            usuario: usuarioGuardado
         });
     })
 });

@@ -25,7 +25,7 @@ app.get("/", (req, res, next) => {
         })
 
 
-    })
+    }).populate("usuario", 'nombre correo')
 })
 
 //

@@ -13,18 +13,19 @@ var Doctor = require("../models/doctor");
 //
 app.get("/", (req, res, next) => {
     Doctor.find({}, (err, doctores) => {
-        if (err) {
-            res.status(500).json({
-                ok: false,
-                mensaje: 'Error cargando doctores',
-                errors: err
+            if (err) {
+                res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error cargando doctores',
+                    errors: err
+                })
+            }
+            return res.status(200).json({
+                ok: true,
+                doctores: doctores
             })
-        }
-        return res.status(200).json({
-            ok: true,
-            doctores: doctores
-        })
-    })
+        }).populate("usuario", "nombre correo")
+        .populate("hospital")
 });
 
 

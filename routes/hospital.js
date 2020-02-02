@@ -48,12 +48,13 @@ app.put("/:id", middlewareAuth.verificaToken, (req, res) => {
         if (!buscado) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'El hospital con el' + id + 'no existe',
+                mensaje: 'El hospital con el' + id + ' no existe',
                 errors: err
             });
         }
         buscado.nombre = body.nombre
         buscado.img = body.img
+        buscado.usuario = req.usuario._id;
 
         buscado.save((err, hospitalGuardado) => {
             if (err) {
@@ -89,7 +90,7 @@ app.delete("/:id", middlewareAuth.verificaToken, (req, res, next) => {
             return res.status(500).json({
                 ok: false,
                 mensaje: 'No existe hospital con ese id',
-                errors: { message: 'No existe un usuario con ese id' }
+                errors: { message: 'No existe un hospital con ese id' }
             });
         }
         res.status(200).json({
@@ -109,7 +110,7 @@ app.post("/", middlewareAuth.verificaToken, (req, res, next) => {
     var hospital = new Hospital({
         nombre: body.nombre,
         img: body.img,
-        usuario: body.usuario
+        usuario: req.usuario._id
     })
     hospital.save((err, hospitalNuevo) => {
         if (err) {
@@ -121,7 +122,7 @@ app.post("/", middlewareAuth.verificaToken, (req, res, next) => {
         }
         res.status(201).json({
             ok: true,
-            hospital: hospitalGuardado
+            hospital: hospitalNuevo
         });
     })
 

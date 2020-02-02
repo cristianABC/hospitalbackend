@@ -88,3 +88,5 @@ app.delete('/:id', middlewareAuth.verificaToken, (req, res, next) => {
 app.post('/', middlewareAuth.verificaToken, (req, res, next) => {
 
 })
+
+module.exports = app;

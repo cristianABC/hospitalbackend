@@ -11,7 +11,7 @@ var Doctor = require("../models/doctor");
 // 
 // GET ALL DOCTORS
 //
-app.get("/", (res, res, next) => {
+app.get("/", (req, res, next) => {
     Doctor.find({}, (err, doctores) => {
         if (err) {
             res.status(500).json({
@@ -51,7 +51,8 @@ app.put("/:id", middlewareAuth.verificaToken, (req, res, next) => {
         }
 
         doctorModificado.nombre = body.nombre;
-        doctorModificado.img = body.img;
+        doctorModificado.usuario = req.usuario._id;
+        doctorModificado.hospital = body.hospital;
 
 
         doctorModificado.save((err, doctorGuardado) => {
@@ -64,7 +65,7 @@ app.put("/:id", middlewareAuth.verificaToken, (req, res, next) => {
             }
             res.status(200).json({
                 ok: true,
-                hospital: hospitalGuardado
+                doctor: doctorGuardado
             });
         })
 
@@ -75,18 +76,59 @@ app.put("/:id", middlewareAuth.verificaToken, (req, res, next) => {
 //  Eliminar Doctor 
 //
 
-app.delete('/:id', middlewareAuth.verificaToken, (req, res, next) => {
+app.delete("/:id", middlewareAuth.verificaToken, (req, res, next) => {
     var id = req.params.id;
-
+    Doctor.findByIdAndRemove(id, (err, eliminado) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al borrar doctor',
+                errors: err
+            });
+        }
+        if (!eliminado) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'No existe Doctor con ese id',
+                errors: { message: 'No existe un Doctor con ese id' }
+            });
+        }
+        res.status(200).json({
+            ok: true,
+            doctor: eliminado
+        });
+    })
 })
+
 
 //
 // Crear Doctor
 //
 
 
-app.post('/', middlewareAuth.verificaToken, (req, res, next) => {
+
+app.post("/", middlewareAuth.verificaToken, (req, res, next) => {
+    var body = req.body;
+    var doctor = new Doctor({
+        nombre: body.nombre,
+        img: body.img,
+        usuario: req.usuario._id,
+        hospital: body.hospital
+    })
+    doctor.save((err, doctorNuevo) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Error al crear doctor',
+                errors: err
+            });
+        }
+        res.status(201).json({
+            ok: true,
+            doctor: doctorNuevo
+        });
+    })
+
 
 })
-
 module.exports = app;

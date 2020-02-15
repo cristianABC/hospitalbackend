@@ -12,6 +12,9 @@ var Doctor = require("../models/doctor");
 // GET ALL DOCTORS
 //
 app.get("/", (req, res, next) => {
+    var des = req.query.desde || 0;
+    des = Number(des);
+
     Doctor.find({}, (err, doctores) => {
             if (err) {
                 res.status(500).json({
@@ -20,12 +23,16 @@ app.get("/", (req, res, next) => {
                     errors: err
                 })
             }
-            return res.status(200).json({
-                ok: true,
-                doctores: doctores
+            Doctor.count({}, (err, conteo) => {
+
+                return res.status(200).json({
+                    ok: true,
+                    doctores: doctores,
+                    total: conteo
+                })
             })
         }).populate("usuario", "nombre correo")
-        .populate("hospital")
+        .populate("hospital").skip(des).limit(5)
 });
 
 

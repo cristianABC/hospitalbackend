@@ -5,7 +5,10 @@ var bodyParser = require('body-parser');
 
 //Inicializar variables
 var app = express();
-
+// Serve Index config
+/* var serveIndex = require('serve-index');
+app.use(express.static(__dirname + '/'))
+app.use('/uploads', serveIndex(__dirname + '/uploads')); */
 
 //Body Parser
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -18,6 +21,7 @@ var HospitalRoutes = require('./routes/hospital');
 var DoctorRoutes = require('./routes/doctor');
 var BusquedaRoutes = require('./routes/busqueda');
 var CargaRoutes = require('./routes/upload');
+var ImagenesRoutes = require('./routes/imagenes');
 //Conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/Hospital', (err, res) => {
     if (err) throw err;
@@ -31,6 +35,7 @@ app.use('/usuario', userRoutes);
 app.use('/login', loginRoutes);
 app.use('/busqueda', BusquedaRoutes);
 app.use('/carga', CargaRoutes);
+app.use('/imagenes', ImagenesRoutes);
 app.use('/', appRoutes);
 
 

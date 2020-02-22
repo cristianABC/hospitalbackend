@@ -112,7 +112,7 @@ usuario.delete('/:id', middlewareAuth.verificaToken, (req, res) => {
 //===========================================
 // Crear Usuario
 //===========================================
-usuario.post('/', middlewareAuth.verificaToken, (req, res) => {
+usuario.post('/', (req, res) => {
     var body = req.body;
 
     var user = new Usuario({

@@ -10,7 +10,7 @@ var Usuario = require('../models/usuario');
 
 app.post('/', (req, res) => {
     var body = req.body;
-    Usuario.findOne({ correo: body.email }, (err, usuarioDB) => {
+    Usuario.findOne({ correo: body.correo }, (err, usuarioDB) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -27,8 +27,8 @@ app.post('/', (req, res) => {
             });
         }
 
-        // if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
-        if (!body.password == usuarioDB.password) {
+        if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
+
             console.log(body.password, usuarioDB.password);
             return res.status(400).json({
                 ok: false,
